@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick QR – Generate and save QR codes</title>
+  <meta name="description" content="Quick QR turns links and text into QR codes you can customize, download, and save to your account.">
+
+  <!-- Small inline favicon so the browser does not request a missing file -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231C2230'/%3E%3Cpath fill='%23fff' d='M7 7h7v7H7zM18 7h7v7h-7zM7 18h7v7H7zM18 18h3v3h-3zM22 22h3v3h-3z'/%3E%3C/svg%3E">
+
+  <!-- Typeface (optional: the page falls back to system fonts if this cannot load) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap">
+
+  <!-- All styling lives in style.css -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <!-- ============================================================
+       SITE HEADER
+       Login / Sign up are shown to guests.
+       Logout stays hidden until script.js confirms a signed-in user.
+       ============================================================ -->
+  <header class="site-header">
+    <div class="container header-inner">
+
+      <a id="logo-link" class="logo" href="#home" aria-label="Quick QR home">
+        <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect class="logo-mark-bg" width="32" height="32" rx="7"></rect>
+          <path class="logo-mark-cell" d="M7 7h7v7H7zM18 7h7v7h-7zM7 18h7v7H7zM18 18h3v3h-3zM22 22h3v3h-3z"></path>
+        </svg>
+        <span class="logo-text">Quick QR</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main">
+        <ul class="nav-list">
+          <li><a id="nav-home" class="nav-link" href="#home" data-view="home">Home</a></li>
+          <li><a id="nav-dashboard" class="nav-link" href="#dashboard" data-view="dashboard">Dashboard</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button id="login-btn" type="button" class="btn btn-ghost">Log in</button>
+        <button id="signup-btn" type="button" class="btn btn-primary">Sign up</button>
+        <button id="logout-btn" type="button" class="btn btn-secondary hidden">Log out</button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Page-level notices (e.g. "You have been logged out", "Email verified") -->
+  <div class="container">
+    <div id="global-message" class="message global-message hidden" aria-live="polite"></div>
+  </div>
+
+
+  <main id="main-content">
+
+    <!-- ============================================================
+         HOME VIEW (landing page)
+         ============================================================ -->
+    <section id="home-view" class="view" aria-labelledby="hero-title">
+      <div class="container hero">
+
+        <div class="hero-content">
+          <h1 id="hero-title" class="hero-title">Turn any link into a QR code in seconds.</h1>
+          <p class="hero-text">
+            Generate a code, choose its size and colors, download it as a PNG,
+            and keep every code you make in your own library.
+          </p>
+
+          <!-- Shown to logged-out visitors -->
+          <div id="hero-guest-actions" class="hero-actions">
+            <button id="hero-signup-btn" type="button" class="btn btn-primary btn-lg">Create an account</button>
+            <button id="hero-login-btn" type="button" class="btn btn-secondary btn-lg">Log in</button>
+          </div>
+
+          <!-- Shown to logged-in users -->
+          <div id="hero-user-actions" class="hero-actions hidden">
+            <button id="hero-dashboard-btn" type="button" class="btn btn-primary btn-lg">Open dashboard</button>
+          </div>
+        </div>
+
+        <!-- Decorative QR graphic (it encodes the words "Quick QR") -->
+        <div class="hero-art" aria-hidden="true">
+          <svg class="hero-qr" viewBox="0 0 21 21" shape-rendering="crispEdges" focusable="false">
+            <path d="M0 0h7v1h-7zM8 0h1v1h-1zM10 0h2v1h-2zM14 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM14 1h1v1h-1zM20 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h4v1h-4zM14 2h1v1h-1zM16 2h3v1h-3zM20 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM14 3h1v1h-1zM16 3h3v1h-3zM20 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM12 4h1v1h-1zM14 4h1v1h-1zM16 4h3v1h-3zM20 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM11 5h2v1h-2zM14 5h1v1h-1zM20 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h7v1h-7zM9 7h4v1h-4zM0 8h1v1h-1zM3 8h7v1h-7zM12 8h2v1h-2zM16 8h1v1h-1zM18 8h3v1h-3zM0 9h5v1h-5zM7 9h3v1h-3zM12 9h1v1h-1zM14 9h6v1h-6zM1 10h2v1h-2zM4 10h3v1h-3zM10 10h1v1h-1zM18 10h3v1h-3zM1 11h3v1h-3zM8 11h2v1h-2zM11 11h1v1h-1zM15 11h2v1h-2zM18 11h2v1h-2zM1 12h1v1h-1zM3 12h2v1h-2zM6 12h1v1h-1zM13 12h5v1h-5zM19 12h2v1h-2zM8 13h2v1h-2zM11 13h2v1h-2zM15 13h1v1h-1zM20 13h1v1h-1zM0 14h7v1h-7zM8 14h2v1h-2zM12 14h3v1h-3zM16 14h3v1h-3zM0 15h1v1h-1zM6 15h1v1h-1zM8 15h6v1h-6zM16 15h3v1h-3zM20 15h1v1h-1zM0 16h1v1h-1zM2 16h3v1h-3zM6 16h1v1h-1zM8 16h5v1h-5zM14 16h2v1h-2zM17 16h1v1h-1zM0 17h1v1h-1zM2 17h3v1h-3zM6 17h1v1h-1zM8 17h1v1h-1zM10 17h3v1h-3zM17 17h2v1h-2zM0 18h1v1h-1zM2 18h3v1h-3zM6 18h1v1h-1zM14 18h3v1h-3zM19 18h2v1h-2zM0 19h1v1h-1zM6 19h1v1h-1zM13 19h8v1h-8zM0 20h7v1h-7zM8 20h1v1h-1zM10 20h2v1h-2zM15 20h1v1h-1z"></path>
+          </svg>
+        </div>
+
+      </div>
+
+      <div class="container">
+        <h2 class="visually-hidden">What you can do with Quick QR</h2>
+        <ul class="feature-list">
+          <li class="feature">
+            <h3 class="feature-title">Custom size and color</h3>
+            <p class="feature-text">Pick a size from small to extra large and match your brand with your own colors.</p>
+          </li>
+          <li class="feature">
+            <h3 class="feature-title">Instant PNG download</h3>
+            <p class="feature-text">Download a sharp image that is ready for print, slides, or the web.</p>
+          </li>
+          <li class="feature">
+            <h3 class="feature-title">Saved to your account</h3>
+            <p class="feature-text">Every code you save is stored securely, so you can download it again any time.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+         DASHBOARD VIEW
+         Hidden by default. script.js reveals it only for authenticated users.
+         ============================================================ -->
+    <section id="dashboard-view" class="view hidden" aria-labelledby="welcome-title">
+      <div class="container dashboard">
+
+        <!-- User dashboard summary -->
+        <div class="dashboard-header">
+          <div class="dashboard-welcome">
+            <h1 id="welcome-title" class="dashboard-title">Welcome back</h1>
+            <p class="dashboard-subtitle">Signed in as <span id="user-email" class="user-email"></span></p>
+          </div>
+
+          <dl class="stat">
+            <dt class="stat-label">Saved QR codes</dt>
+            <dd id="saved-count" class="stat-value">0</dd>
+          </dl>
+        </div>
+
+        <!-- QR GENERATOR -->
+        <section id="generator-section" class="card" aria-labelledby="generator-title">
+          <div class="card-header">
+            <h2 id="generator-title" class="card-title">Create a QR code</h2>
+            <p class="card-subtitle">Paste a link or type some text, adjust the look, then generate.</p>
+          </div>
+
+          <div id="generator-message" class="message hidden" aria-live="polite"></div>
+
+          <div class="generator-layout">
+
+            <!-- Left side: inputs and options -->
+            <form id="qr-form" class="qr-form" novalidate>
+
+              <div class="form-group">
+                <label class="form-label" for="qr-title">
+                  Title <span class="form-optional">Optional</span>
+                </label>
+                <input id="qr-title" name="title" type="text" class="form-input"
+                       placeholder="e.g. Portfolio website" maxlength="80" autocomplete="off">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="qr-content">Text or URL</label>
+                <textarea id="qr-content" name="content" class="form-input" rows="4" maxlength="1000"
+                          placeholder="https://example.com" aria-describedby="qr-content-hint" required></textarea>
+                <p id="qr-content-hint" class="form-hint">Up to 1000 characters.</p>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="qr-size">Size</label>
+                  <select id="qr-size" name="size" class="form-input">
+                    <option value="160">160 px</option>
+                    <option value="256" selected>256 px</option>
+                    <option value="384">384 px</option>
+                    <option value="512">512 px</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="qr-fg-color">Foreground</label>
+                  <div class="color-field">
+                    <input id="qr-fg-color" name="foreground" type="color" class="color-input" value="#000000">
+                    <output id="qr-fg-value" class="color-value" for="qr-fg-color">#000000</output>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="qr-bg-color">Background</label>
+                  <div class="color-field">
+                    <input id="qr-bg-color" name="background" type="color" class="color-input" value="#ffffff">
+                    <output id="qr-bg-value" class="color-value" for="qr-bg-color">#ffffff</output>
+                  </div>
+                </div>
+              </div>
+
+              <label class="checkbox" for="qr-save-toggle">
+                <input id="qr-save-toggle" name="save" type="checkbox" checked>
+                <span>Save to My QR codes</span>
+              </label>
+
+              <div class="form-actions">
+                <button id="generate-btn" type="submit" class="btn btn-primary">Generate QR</button>
+                <button id="clear-btn" type="button" class="btn btn-secondary">Clear</button>
+              </div>
+            </form>
+
+            <!-- Right side: preview and actions -->
+            <div class="preview-panel">
+              <div id="qr-preview" class="qr-preview" aria-live="polite">
+
+                <!-- Empty state (shown until a QR code is generated) -->
+                <div id="qr-empty-state" class="empty-state">
+                  <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                    <path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"></path>
+                  </svg>
+                  <p class="empty-title">No QR code yet</p>
+                  <p class="empty-text">Your QR code will appear here after you generate it.</p>
+                </div>
+
+                <!-- The QR code is drawn onto this canvas by script.js -->
+                <canvas id="qr-canvas" class="qr-canvas hidden" role="img" aria-label="Generated QR code"></canvas>
+              </div>
+
+              <div class="preview-actions">
+                <button id="download-btn" type="button" class="btn btn-secondary" disabled>Download PNG</button>
+                <button id="copy-btn" type="button" class="btn btn-secondary" disabled>Copy content</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- MY QR CODES -->
+        <section id="saved-section" class="card" aria-labelledby="saved-title">
+          <div class="card-header">
+            <h2 id="saved-title" class="card-title">My QR codes</h2>
+            <p class="card-subtitle">Codes you saved appear here, newest first.</p>
+          </div>
+
+          <div id="saved-message" class="message hidden" aria-live="polite"></div>
+
+          <p id="saved-loading" class="loading-text hidden">Loading your QR codes…</p>
+
+          <div id="saved-empty-state" class="empty-state empty-state-inline">
+            <p class="empty-title">Nothing saved yet</p>
+            <p class="empty-text">Generate a QR code with “Save to My QR codes” selected and it will show up here.</p>
+          </div>
+
+          <ul id="saved-list" class="saved-list" aria-label="Your saved QR codes"></ul>
+        </section>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-text">&copy; <span id="footer-year">2026</span> Quick QR</p>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       TEMPLATE: one saved QR code row
+       script.js clones this for every record fetched from Supabase.
+       ============================================================ -->
+  <template id="saved-item-template">
+    <li class="saved-item">
+      <div class="saved-thumb">
+        <canvas class="saved-thumb-canvas" role="img" aria-label="QR code preview"></canvas>
+      </div>
+
+      <div class="saved-info">
+        <h3 class="saved-title"></h3>
+        <p class="saved-content"></p>
+        <p class="saved-date">Created <time class="saved-time"></time></p>
+      </div>
+
+      <div class="saved-actions">
+        <button type="button" class="btn btn-secondary btn-sm saved-download-btn">Download</button>
+        <button type="button" class="btn btn-danger btn-sm saved-delete-btn">Delete</button>
+      </div>
+    </li>
+  </template>
+
+
+  <!-- ============================================================
+       AUTHENTICATION MODAL
+       One dialog, four panels: log in, sign up, forgot password,
+       and "choose a new password" (opened from the password-reset email).
+       ============================================================ -->
+  <div id="auth-modal" class="modal hidden" role="dialog" aria-modal="true"
+       aria-labelledby="auth-title" aria-describedby="auth-subtitle">
+    <div id="auth-backdrop" class="modal-backdrop"></div>
+
+    <div id="auth-panel" class="modal-panel" tabindex="-1">
+      <button id="auth-close-btn" type="button" class="modal-close" aria-label="Close dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+
+      <div class="modal-header">
+        <h2 id="auth-title" class="modal-title">Log in</h2>
+        <p id="auth-subtitle" class="modal-subtitle">Welcome back. Enter your details to continue.</p>
+      </div>
+
+      <!-- Error / success messages for every form in this dialog -->
+      <div id="auth-message" class="message hidden" aria-live="polite"></div>
+
+      <!-- LOG IN -->
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" class="form-input"
+                 placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="login-password">Password</label>
+            <button id="forgot-password-btn" type="button" class="link-button">Forgot password?</button>
+          </div>
+          <input id="login-password" name="password" type="password" class="form-input"
+                 placeholder="Your password" autocomplete="current-password" required>
+        </div>
+
+        <button id="login-submit-btn" type="submit" class="btn btn-primary btn-block">Log in</button>
+
+        <p class="auth-switch">
+          New to Quick QR?
+          <button id="show-signup-btn" type="button" class="link-button">Create an account</button>
+        </p>
+      </form>
+
+      <!-- SIGN UP -->
+      <form id="signup-form" class="auth-form hidden" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="signup-email">Email</label>
+          <input id="signup-email" name="email" type="email" class="form-input"
+                 placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-password">Password</label>
+          <input id="signup-password" name="password" type="password" class="form-input"
+                 placeholder="At least 8 characters" autocomplete="new-password" minlength="8"
+                 aria-describedby="signup-password-hint" required>
+          <p id="signup-password-hint" class="form-hint">Use at least 8 characters.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="signup-confirm-password">Confirm password</label>
+          <input id="signup-confirm-password" name="confirmPassword" type="password" class="form-input"
+                 placeholder="Repeat your password" autocomplete="new-password" required>
+        </div>
+
+        <button id="signup-submit-btn" type="submit" class="btn btn-primary btn-block">Create account</button>
+
+        <p class="auth-switch">
+          Already have an account?
+          <button id="show-login-btn" type="button" class="link-button">Log in</button>
+        </p>
+      </form>
+
+      <!-- FORGOT PASSWORD -->
+      <form id="forgot-form" class="auth-form hidden" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="forgot-email">Email</label>
+          <input id="forgot-email" name="email" type="email" class="form-input"
+                 placeholder="you@example.com" autocomplete="email" required>
+        </div>
+
+        <button id="forgot-submit-btn" type="submit" class="btn btn-primary btn-block">Send reset link</button>
+
+        <p class="auth-switch">
+          <button id="back-to-login-btn" type="button" class="link-button">Back to log in</button>
+        </p>
+      </form>
+
+      <!-- CHOOSE A NEW PASSWORD (opened when the user follows the reset link in their email) -->
+      <form id="update-password-form" class="auth-form hidden" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="new-password">New password</label>
+          <input id="new-password" name="password" type="password" class="form-input"
+                 placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="new-confirm-password">Confirm new password</label>
+          <input id="new-confirm-password" name="confirmPassword" type="password" class="form-input"
+                 placeholder="Repeat your new password" autocomplete="new-password" required>
+        </div>
+
+        <button id="update-password-submit-btn" type="submit" class="btn btn-primary btn-block">Save new password</button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       EXTERNAL LIBRARIES (loaded before script.js)
+       ============================================================ -->
+
+  <!-- Supabase JavaScript client (official browser CDN build).
+       It exposes a global object called "supabase". -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- QR code generator (node-qrcode browser bundle, pinned to 1.4.4 – the latest
+       release that ships a ready-made browser file). It exposes a global called "QRCode". -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+
+  <!-- ============================================================
+       YOUR APP CODE
+       SUPABASE SETUP: open script.js and paste your Project URL and
+       public (anon / publishable) key into the CONFIGURATION section
+       at the very top of the file. Never use a service-role key here.
+       ============================================================ -->
+  <script src="script.js"></script>
+</body>
+</html>
